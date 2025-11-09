@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { CrossIcon } from "../icons/CrossIcon";
+import { Button } from "./Button";
+import { Input } from "./Input";
 
 interface CreateContentModelProps {
   open: boolean;
@@ -11,7 +13,16 @@ export function CreateContentModel({open, onClose}: CreateContentModelProps) {
         flex justify-center">
             <div className="flex flex-col justify-center">
                 <span className="bg-white p-4 rounded-md">
-                 hi there
+                    <div onClick={onClose} className="flex justify-end cursor-pointer">
+                        <CrossIcon />
+                    </div>
+                    <div>
+                        <Input placeholder={"Title"}/>
+                        <Input placeholder={"Link"}/>
+                    </div>
+                    <div className="flex justify-center">
+                        <Button variant="primary" text="Submit"/>
+                    </div>                    
                 </span>
             </div>
         </div>}

@@ -8,11 +8,13 @@ import connectToDB from "./db.js"
 import { JWT_SECRET } from "./config.js"
 import userMiddleware from "./middleware.js"
 import { random } from "./utils.js"
+import cors from "cors";
 
 await connectToDB();
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 app.post('/api/v1/signup',async (req, res) => {
     

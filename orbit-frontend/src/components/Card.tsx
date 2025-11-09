@@ -43,7 +43,7 @@ export function Card({ title, link, type }: CardProps) {
   };
 
   return (
-    <div className="bg-white rounded-md outline-gray-300 p-4 max-w-72 border">
+    <div className="bg-white rounded-md outline-gray-300 p-4 max-w-72 border m-2">
       <div className="flex justify-between">
         <div className="flex items-center text-md">
           <div className="text-gray-500 pr-2">
