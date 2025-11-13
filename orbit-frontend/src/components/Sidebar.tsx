@@ -1,6 +1,6 @@
 import { SidebarItem } from "./SidebarItem" 
-import { TwitterIcon } from "../icons/Twitter"
-import { YoutubeIcon } from "../icons/YoutubeIcon"
+import { NewFolder } from "../icons/NewFolder"
+import { Folder } from "../icons/Folder"
 import { OrbitIcon } from "../icons/OrbitIcon"
 
 export function Sidebar(){
@@ -12,8 +12,8 @@ export function Sidebar(){
             Orbit
         </div>
         <div className="pt-8 pl-4">
-            <SidebarItem icon={<TwitterIcon/>} text="Twitter"/>
-            <SidebarItem icon={<YoutubeIcon/>} text="Youtube"/>
+            <SidebarItem icon={<NewFolder/>} text="New Folder"/>
+            <SidebarItem icon={<Folder/>} text="DSA"/>
         </div>
     </div> 
 }
