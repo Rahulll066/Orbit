@@ -1,7 +1,7 @@
 import { Input } from "../components/Input"
 import { Button } from "../components/Button"
 import { OrbitIcon } from "../icons/OrbitIcon"
-import { useRef } from "react";
+import { useRef,useState } from "react";
 import axios from "axios";
 import { BACKEND_URL } from "../config";
 import { useNavigate } from "react-router-dom";
@@ -10,11 +10,13 @@ export function Signin() {
     const usernameRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
+    const [error,setError] = useState(false);
 
     async function signin() {
         const username = usernameRef.current?.value;
         const password = passwordRef.current?.value;
-        const response = await axios.post(BACKEND_URL+"/api/v1/signin", {
+        try{
+          const response = await axios.post(BACKEND_URL+"/api/v1/signin", {
             username,
             password    
         });
@@ -22,6 +24,11 @@ export function Signin() {
         localStorage.setItem("token", jwt);
         alert("Signin Successful!");
         navigate("/dashboard");
+        }
+        catch(err){
+          setError(true);
+          alert("Signin Failed! Please check your credentials.");
+        }
     }
 
   return (
@@ -35,9 +42,15 @@ export function Signin() {
         </div>
 
         <div className="w-full space-y-4">
-          <Input ref={usernameRef} placeholder="Username" />
-          <Input ref={passwordRef} placeholder="Password"/>
+          <Input ref={usernameRef} placeholder="Username" type="text" />
+          <Input ref={passwordRef} placeholder="Password" type="password"/>
         </div>
+
+        {error && (
+          <p className="text-red-500 text-sm mt-3 text-center">
+            {error}
+          </p>
+        )}
 
         <div className="w-full flex justify-center mt-6">
           <Button onClick={signin} variant="primary" text="Sign In"/>
