@@ -1,16 +1,26 @@
 //@ts-ignore
-import { ReactElement } from "react"
+import { ReactElement } from "react";
 
-export function SidebarItem({text,icon}: {
-    text: string,
+interface SidebarItemProps {
+    text: string;
     icon: ReactElement;
-}){
-    return <div className="flex text-gray-700 hover:bg-slate-100 cursor-pointer py-2">
-        <div className="pr-2">
-        {icon}
+    active?: boolean; // ← ADDED
+}
+
+export function SidebarItem({ text, icon, active }: SidebarItemProps) {
+    return (
+        <div 
+            className={`
+                flex text-gray-700 cursor-pointer py-2 pr-4 rounded-md
+                ${active ? "bg-yellow-100 font-semibold" : "hover:bg-slate-100"}
+            `}
+        >
+            <div className="pr-2">
+                {icon}
+            </div>
+            <div>
+                {text}
+            </div>
         </div>
-        <div>
-        {text}
-        </div>
-    </div>
+    );
 }
