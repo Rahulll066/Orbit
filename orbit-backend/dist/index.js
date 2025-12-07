@@ -1,7 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-import { ContentModel, UserModel, LinkModel } from "./db.js";
+import { ContentModel, UserModel, LinkModel, FolderModel } from "./db.js";
 import z from "zod";
 import bcrypt from "bcrypt";
 import connectToDB from "./db.js";
@@ -47,37 +47,6 @@ app.post('/api/v1/signin', async (req, res) => {
     const token = jwt.sign({ id: user._id }, JWT_SECRET);
     res.json({ token });
 });
-app.post('/api/v1/content', userMiddleware, async (req, res) => {
-    const title = req.body.title;
-    const link = req.body.link;
-    const type = req.body.type;
-    await ContentModel.create({
-        title,
-        link,
-        type,
-        //@ts-ignore
-        userId: req.userId,
-        tags: []
-    });
-    res.json({ message: "Content added successfully" });
-});
-app.get('/api/v1/content', userMiddleware, async (req, res) => {
-    //@ts-ignore
-    const userId = req.userId;
-    const content = await ContentModel.find({
-        userId: userId
-    }).populate('userId', 'username');
-    res.json({ content });
-});
-app.delete('/api/v1/content', userMiddleware, async (req, res) => {
-    const contentId = req.body.contentId;
-    await ContentModel.deleteMany({
-        _id: contentId,
-        //@ts-ignore
-        userId: req.userId
-    });
-    res.json({ message: "Content deleted successfully" });
-});
 app.post('/api/v1/brain/share', userMiddleware, async (req, res) => {
     const share = req.body.share;
     if (share) {
@@ -120,6 +89,69 @@ app.get('/api/v1/brain/:shareLink', async (req, res) => {
         username: user?.username,
         content: content
     });
+});
+app.get("/api/v1/folders", userMiddleware, async (req, res) => {
+    //@ts-ignore
+    const folders = await FolderModel.find({ userId: req.userId });
+    res.json({ folders });
+});
+app.post("/api/v1/folders", userMiddleware, async (req, res) => {
+    const name = req.body.name;
+    if (!name || name.trim() === "")
+        return res.status(400).json({ message: "Folder name required" });
+    const folder = await FolderModel.create({
+        name,
+        // @ts-ignore
+        userId: req.userId
+    });
+    res.json({ folder });
+});
+app.put("/api/v1/folders/:id", userMiddleware, async (req, res) => {
+    const { id } = req.params;
+    const { name } = req.body;
+    await FolderModel.updateOne(
+    // @ts-ignore
+    { _id: id, userId: req.userId }, { name });
+    res.json({ message: "Folder renamed" });
+});
+app.delete("/api/v1/folders/:id", userMiddleware, async (req, res) => {
+    const { id } = req.params;
+    // @ts-ignore
+    await FolderModel.deleteOne({ _id: id, userId: req.userId });
+    // Delete all content inside folder
+    await ContentModel.deleteMany({ folderId: id });
+    res.json({ message: "Folder deleted" });
+});
+app.get("/api/v1/content", userMiddleware, async (req, res) => {
+    const folderId = req.query.folderId;
+    const content = await ContentModel.find({
+        // @ts-ignore
+        userId: req.userId,
+        folderId
+    });
+    res.json({ content });
+});
+app.post("/api/v1/content", userMiddleware, async (req, res) => {
+    const { title, link, type, folderId } = req.body;
+    const item = await ContentModel.create({
+        title,
+        link,
+        type,
+        folderId,
+        // @ts-ignore
+        userId: req.userId,
+        tags: []
+    });
+    res.json({ content: item });
+});
+app.delete("/api/v1/content/:id", userMiddleware, async (req, res) => {
+    const { id } = req.params;
+    await ContentModel.deleteOne({
+        _id: id,
+        // @ts-ignore
+        userId: req.userId
+    });
+    res.json({ message: "Content deleted" });
 });
 app.listen(3000, () => {
     console.log("Server started on port 3000");

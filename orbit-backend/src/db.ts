@@ -21,7 +21,8 @@ const contentSchema = new Schema({
     title: {type: String,required: true},
     link: {type: String},
     tags: [{type: mongoose.Types.ObjectId, ref: 'Tag'}],
-    userId: {type: mongoose.Types.ObjectId, ref: 'User',required: true}
+    userId: {type: mongoose.Types.ObjectId, ref: 'User',required: true},
+    folderId: { type: mongoose.Types.ObjectId, ref: 'Folder', required: true }
 });
 
 const LinkSchema = new Schema({
@@ -29,6 +30,12 @@ const LinkSchema = new Schema({
     userId: {type: mongoose.Types.ObjectId, ref: 'User',required: true,unique:true}
 });
 
+const folderSchema = new Schema({
+  name: { type: String, required: true },
+  userId: { type: mongoose.Types.ObjectId, ref: "User", required: true }
+});
+
+export const FolderModel = mongoose.model("Folder", folderSchema);
 export const LinkModel = mongoose.model('Links', LinkSchema);
 export const ContentModel = mongoose.model('Content', contentSchema);
 export const UserModel = mongoose.model('User', userSchema);
