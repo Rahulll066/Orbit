@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { NotebookIcon } from "../icons/NotebookIcon";
 import { ShareIcon } from "../icons/ShareIcon";
 import { TrashIcon } from "../icons/TrashIcon";
@@ -8,60 +9,55 @@ interface CardProps {
   onDelete?: () => void;
 }
 
-// Detect type purely from URL (no backend)
-function detectType(url: string): "youtube" | "twitter" | "instagram" | "doc" {
-  const lower = url.toLowerCase();
-  if (lower.includes("youtu")) return "youtube";
-  if (lower.includes("twitter.com") || lower.includes("x.com")) return "twitter";
-  if (lower.includes("instagram.com")) return "instagram";
+// Detect type
+function detectType(url: string) {
+  const u = url.toLowerCase();
+  if (u.includes("youtu")) return "youtube";
+  if (u.includes("x.com") || u.includes("twitter.com")) return "twitter";
+  if (u.includes("instagram.com")) return "instagram";
   return "doc";
 }
 
-// ---------- Normalizers ----------
-
-// YouTube embed url
-function getYoutubeEmbed(url: string): string {
+// Normalize X → Twitter link
+function getTwitterEmbedLink(url: string): string {
   try {
-    if (url.includes("watch?v=")) {
-      const id = url.split("watch?v=")[1].split("&")[0];
-      return `https://www.youtube.com/embed/${id}`;
+    let normalized = url.replace("x.com", "twitter.com");
+
+    // Remove ?s=20 or other parameters
+    if (normalized.includes("?")) {
+      normalized = normalized.split("?")[0];
     }
-    if (url.includes("youtu.be/")) {
-      const id = url.split("youtu.be/")[1].split("?")[0];
-      return `https://www.youtube.com/embed/${id}`;
-    }
-  } catch {}
+
+    return normalized;
+  } catch {
+    return "";
+  }
+}
+
+// YouTube embed
+function getYoutubeEmbed(url: string) {
+  if (url.includes("watch?v=")) {
+    const id = url.split("watch?v=")[1].split("&")[0];
+    return `https://www.youtube.com/embed/${id}`;
+  }
+  if (url.includes("youtu.be/")) {
+    const id = url.split("youtu.be/")[1].split("?")[0];
+    return `https://www.youtube.com/embed/${id}`;
+  }
   return url;
 }
 
-// Google Docs embed url
-function getDocsEmbed(url: string): string {
-  try {
-    return url
-      .replace(/\/edit.*/, "/preview")
-      .replace(/\/view.*/, "/preview");
-  } catch {
-    return url;
-  }
+// Google Docs embed
+function getDocsEmbed(url: string) {
+  return url.replace(/\/edit.*/, "/preview").replace(/\/view.*/, "/preview");
 }
 
-// Twitter/X via twitframe (no widget.js needed)
-function getTwitterEmbed(url: string): string {
-  try {
-    return "https://twitframe.com/show?url=" + encodeURIComponent(url);
-  } catch {
-    return url;
-  }
-}
-
-// Instagram post / reel embed
-function getInstagramEmbed(urlStr: string): string {
+// Instagram embed
+function getInstagramEmbed(urlStr: string) {
   try {
     const url = new URL(urlStr);
-    // Ensure path ends with '/'
     let path = url.pathname;
     if (!path.endsWith("/")) path += "/";
-    // /p/{id}/embed or /reel/{id}/embed
     return `https://www.instagram.com${path}embed`;
   } catch {
     return urlStr;
@@ -70,70 +66,103 @@ function getInstagramEmbed(urlStr: string): string {
 
 export function Card({ title, link, onDelete }: CardProps) {
   const type = detectType(link);
+  const tweetRef = useRef<HTMLDivElement>(null);
 
-  let embedSrc = "";
-  let iframeClass = "w-full rounded-md";
+  // Load Twitter/X embed script once
+  useEffect(() => {
+    if (type !== "twitter") return;
+
+    // Load script once
+    if (!document.getElementById("twitter-wjs")) {
+      const script = document.createElement("script");
+      script.id = "twitter-wjs";
+      script.src = "https://platform.twitter.com/widgets.js";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+
+    // Reload widgets when component updates
+    const interval = setInterval(() => {
+      if ((window as any).twttr?.widgets) {
+        (window as any).twttr.widgets.load(tweetRef.current);
+        clearInterval(interval);
+      }
+    }, 300);
+
+    return () => clearInterval(interval);
+  }, [type, link]);
+
+  let embed = null;
+
+  if (type === "twitter") {
+    const embedUrl = getTwitterEmbedLink(link);
+
+    embed = (
+      <div ref={tweetRef}>
+        <blockquote className="twitter-tweet">
+          <a href={embedUrl}></a>
+        </blockquote>
+      </div>
+    );
+  }
 
   if (type === "youtube") {
-    embedSrc = getYoutubeEmbed(link);
-    iframeClass += " aspect-video";
-  } else if (type === "twitter") {
-    embedSrc = getTwitterEmbed(link);
-    iframeClass += " aspect-video";
-  } else if (type === "instagram") {
-    embedSrc = getInstagramEmbed(link);
-    // Reels are vertical; give them more height
-    iframeClass += " h-[550px]";
-  } else {
-    // Google Doc or generic link
-    embedSrc = getDocsEmbed(link);
-    iframeClass += " h-[500px]";
+    embed = (
+      <iframe
+        className="w-full aspect-video rounded-md"
+        src={getYoutubeEmbed(link)}
+        allowFullScreen
+      />
+    );
+  }
+
+  if (type === "instagram") {
+    embed = (
+      <iframe
+        className="w-full h-[550px] rounded-md"
+        src={getInstagramEmbed(link)}
+        allowFullScreen
+      />
+    );
+  }
+
+  if (!embed) {
+    embed = (
+      <iframe
+        className="w-full h-[500px] rounded-md"
+        src={getDocsEmbed(link)}
+      />
+    );
   }
 
   return (
-    <div className="bg-white rounded-md outline-gray-300 p-4 
-      border m-4 
-      w-full sm:w-[350px] lg:w-[420px] 
-      shadow-sm">
+    <div className="bg-white rounded-md p-4 border shadow-sm 
+      w-full sm:w-[350px] lg:w-[420px] m-4">
+
       {/* Header */}
       <div className="flex justify-between items-center">
         <div className="flex items-center text-md">
-          <div className="text-gray-500 pr-2">
-            <NotebookIcon />
-          </div>
+          <span className="text-gray-500 pr-2"><NotebookIcon /></span>
           {title}
         </div>
 
         <div className="flex items-center gap-3">
-          <a
-            href={link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-gray-600"
-          >
+          <a href={link} target="_blank" className="text-gray-600">
             <ShareIcon />
           </a>
-          <button
-            onClick={onDelete}
-            className="text-gray-600 hover:text-red-500"
-          >
+          <button onClick={onDelete} className="text-gray-600 hover:text-red-500">
             <TrashIcon />
           </button>
         </div>
       </div>
 
       {/* Preview */}
-      <div className="pt-4">
-        <iframe
-          className={iframeClass}
-          src={embedSrc}
-          title={title}
-          allowFullScreen
-        ></iframe>
-      </div>
+      <div className="pt-4">{embed}</div>
     </div>
   );
 }
+
+
 
 
 
