@@ -2,23 +2,25 @@ import { SidebarItem } from "./SidebarItem";
 import { NewFolder } from "../icons/NewFolder";
 import { Folder } from "../icons/Folder";
 import { OrbitIcon } from "../icons/OrbitIcon";
+import { RenameIcon } from "../icons/Rename";
+import { TrashIcon } from "../icons/TrashIcon";
 
 interface SidebarProps {
   folders: { name: string }[];
   currentFolderIndex: number | null;
   onSelectFolder: (index: number) => void;
-  openFolderModal: () => void;
+  openAddFolderModal: () => void;
+  openRenameFolderModal: (index: number) => void;
   onDeleteFolder: (index: number) => void;
-  onRenameFolder: (index: number, newName: string) => void;
 }
 
 export function Sidebar({
   folders,
   currentFolderIndex,
   onSelectFolder,
-  openFolderModal,
-  onDeleteFolder,
-  onRenameFolder
+  openAddFolderModal,
+  openRenameFolderModal,
+  onDeleteFolder
 }: SidebarProps) {
   return (
     <div className="h-screen bg-white border-r w-72 fixed left-0 top-0 pl-6 pt-4">
@@ -29,8 +31,8 @@ export function Sidebar({
         Orbit
       </div>
 
-      {/* New Folder */}
-      <div className="pt-8 pl-4 cursor-pointer" onClick={openFolderModal}>
+      {/* Add Folder */}
+      <div className="pt-8 pl-4 cursor-pointer" onClick={openAddFolderModal}>
         <SidebarItem icon={<NewFolder />} text="New Folder" />
       </div>
 
@@ -38,8 +40,9 @@ export function Sidebar({
       <div className="pt-4 pl-4">
         {folders.map((folder, index) => (
           <div key={index} className="flex items-center justify-between pr-4">
-            
-            <div onClick={() => onSelectFolder(index)} className="flex-1">
+
+            {/* Click to open folder */}
+            <div className="flex-1" onClick={() => onSelectFolder(index)}>
               <SidebarItem
                 icon={<Folder />}
                 text={folder.name}
@@ -49,33 +52,29 @@ export function Sidebar({
 
             {/* Rename */}
             <div
-              className="cursor-pointer text-blue-500 mr-2"
+              className="cursor-pointer mr-2 p-1 rounded hover:bg-slate-200 text-gray-500"
               onClick={(e) => {
                 e.stopPropagation();
-                const newName = prompt("Rename folder:", folder.name);
-                if (newName && newName.trim()) {
-                  onRenameFolder(index, newName.trim());
-                }
+                openRenameFolderModal(index);
               }}
             >
-              ✏️
+              <RenameIcon />
             </div>
 
             {/* Delete */}
             <div
-              className="cursor-pointer text-red-500"
+              className="cursor-pointer p-1 rounded hover:bg-slate-200 text-gray-500"
               onClick={(e) => {
                 e.stopPropagation();
                 onDeleteFolder(index);
               }}
             >
-              🗑
+              <TrashIcon />
             </div>
 
           </div>
         ))}
       </div>
-
     </div>
   );
 }

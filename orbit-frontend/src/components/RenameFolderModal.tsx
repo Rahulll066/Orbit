@@ -1,30 +1,36 @@
 import { CrossIcon } from "../icons/CrossIcon";
-import { Input } from "./Input";
 import { Button } from "./Button";
-import { useState } from "react";
+import { Input } from "./Input";
+import { useState, useEffect } from "react";
 
-export function CreateFolderModal({
+export function RenameFolderModal({
   open,
   onClose,
-  onSubmit
+  onSubmit,
+  initialName
 }: {
   open: boolean;
   onClose: () => void;
   onSubmit: (name: string) => void;
+  initialName: string;
 }) {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(initialName);
+
+  useEffect(() => {
+    setName(initialName);
+  }, [initialName]);
 
   if (!open) return null;
 
   return (
     <div className="w-screen h-screen fixed inset-0 bg-black/40 flex justify-center items-center">
       <div className="bg-white p-6 rounded-md w-80">
-        
+
         <div className="flex justify-end cursor-pointer" onClick={onClose}>
           <CrossIcon />
         </div>
 
-        <h2 className="text-lg font-semibold mb-3">Create Folder</h2>
+        <h2 className="text-lg font-semibold mb-3">Rename Folder</h2>
 
         <Input
           placeholder="Folder name"
@@ -35,10 +41,9 @@ export function CreateFolderModal({
         <div className="flex justify-center mt-4">
           <Button
             variant="primary"
-            text="Create"
+            text="Save"
             onClick={() => {
               if (name.trim()) onSubmit(name.trim());
-              setName("");
               onClose();
             }}
           />
