@@ -48,7 +48,7 @@ export function LandingPage() {
 
         <div className="flex justify-center md:justify-end w-full">
           <img
-            src="../src/assets/dashboard.png"
+            src="https://ik.imagekit.io/0tglkhk4r/Orbit/dashboard.png"
             alt="Orbit workspace preview"
             className="
               w-full
