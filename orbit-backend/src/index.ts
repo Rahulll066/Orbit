@@ -15,10 +15,8 @@ await connectToDB();
 const app = express();
 app.use(cors({
   origin: [
-    "https://orbit-stayorganized-stayinorbit.vercel.app"
+    CORS_ORIGIN
   ],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  credentials: true
 }));
 app.use(express.json());
 
