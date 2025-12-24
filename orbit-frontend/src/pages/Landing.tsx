@@ -8,32 +8,34 @@ import { LandingCTA } from "../components/FinalCTA";
 export function LandingPage() {
   return (
     <div className="min-h-screen bg-white flex flex-col">
-      <nav className="flex items-center justify-between px-10 py-5 shadow-sm">
+      <nav className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-10 py-4 sm:py-5 shadow-sm gap-4 sm:gap-0">
         <div className="flex items-center gap-1 text-2xl font-bold text-[#EFB100]">
           <OrbitIcon/>
           <span>Orbit</span>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto">
           <Button
             variant="primary"
             text="Try Orbit for free"
             onClick={() => (window.location.href = "/signup")}
+            fullWidth
           />
           <Button
             variant="secondary"
             text="Log in"
             onClick={() => (window.location.href = "/signin")}
+            fullWidth
           />
         </div>
       </nav>
 
-      <section className="flex flex-col md:flex-row items-center justify-between px-10 md:px-20 py-20 md:py-28 gap-10">
-        <div className="flex flex-col gap-6 max-w-xl">
-          <h1 className="text-5xl font-bold text-gray-900 leading-tight">
+      <section className="flex flex-col md:flex-row items-center justify-between px-4 sm:px-10 md:px-20 py-10 sm:py-20 md:py-28 gap-6 sm:gap-10">
+        <div className="flex flex-col gap-4 sm:gap-6 max-w-xl w-full">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
             Organize your digital universe with <span className="text-[#EFB100]">Orbit</span>.
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-base sm:text-lg text-gray-600">
             Bring all your links, videos, and documents into one clean, focused workspace.
             Simple, fast, and beautifully organized — built for creators, learners, and teams.
           </p>
@@ -46,18 +48,11 @@ export function LandingPage() {
           </div>
         </div>
 
-        <div className="flex justify-center md:justify-end w-full">
+        <div className="flex justify-center w-full">
           <img
             src="https://ik.imagekit.io/0tglkhk4r/Orbit/dashboard.png"
             alt="Orbit workspace preview"
-            className="
-              w-full
-              max-w-[900px]
-              h-auto
-              rounded-xl
-              shadow-lg
-              object-contain
-            "
+            className="w-full max-w-[400px] sm:max-w-[600px] md:max-w-[900px] h-auto rounded-lg sm:rounded-xl shadow-lg object-contain"
           />
         </div>
       </section>

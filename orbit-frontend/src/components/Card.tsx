@@ -118,26 +118,25 @@ export function Card({ title, link, onDelete }: CardProps) {
   }
 
   return (
-    <div className="bg-white rounded-md p-4 border shadow-sm 
-      w-full sm:w-[350px] lg:w-[420px] m-4">
+    <div className="bg-white rounded-md p-4 border shadow-sm hover:shadow-md transition-shadow h-full flex flex-col">
 
-      <div className="flex justify-between items-center">
-        <div className="flex items-center text-md">
-          <span className="text-gray-500 pr-2"><NotebookIcon /></span>
-          {title}
+      <div className="flex justify-between items-start gap-2 mb-4">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          <span className="text-gray-500 flex-shrink-0"><NotebookIcon /></span>
+          <p className="text-sm md:text-base text-gray-800 font-medium truncate">{title}</p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <a href={link} target="_blank" className="text-gray-600">
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <a href={link} target="_blank" className="text-gray-600 hover:text-yellow-500 transition">
             <ShareIcon />
           </a>
-          <button onClick={onDelete} className="text-gray-600 hover:text-red-500">
+          <button onClick={onDelete} className="text-gray-600 hover:text-red-500 transition">
             <TrashIcon />
           </button>
         </div>
       </div>
 
-      <div className="pt-4">{embed}</div>
+      <div className="pt-2 overflow-auto flex-1">{embed}</div>
     </div>
   );
 }

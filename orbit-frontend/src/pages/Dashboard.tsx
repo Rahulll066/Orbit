@@ -263,35 +263,37 @@ export default function Dashboard() {
         ) : (
           <>
             {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+              <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
                 <button
-                  className="md:hidden px-3 py-2 border rounded"
+                  className="md:hidden px-3 py-2 border rounded text-sm"
                   onClick={() => setMobileSidebarOpen(true)}
                 >
                   ☰
                 </button>
 
-                <h1 className="text-2xl font-bold">{currentFolder.name}</h1>
+                <h1 className="text-xl sm:text-2xl font-bold truncate">{currentFolder.name}</h1>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full sm:w-auto">
                 <Button
                   variant="primary"
                   text="Add Content"
                   startIcon={<PlusIcon />}
                   onClick={() => setContentModalOpen(true)}
+                  fullWidth
                 />
                 <Button
                   variant="secondary"
                   text="Share Orbit"
                   startIcon={<ShareIcon />}
+                  fullWidth
                 />
               </div>
             </div>
 
             {/* Cards */}
-            <div className="flex flex-wrap justify-center md:justify-start">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               {currentFolder.cards.map((c) => (
                 <Card
                   key={c._id}
