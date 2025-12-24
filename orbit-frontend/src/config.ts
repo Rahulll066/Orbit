@@ -1,1 +1,0 @@
-export const BACKEND_URL = "https://orbit-djvy.onrender.com";

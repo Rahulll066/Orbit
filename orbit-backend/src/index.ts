@@ -1,161 +1,151 @@
-import express from "express"
-import mongoose from "mongoose"
-import jwt from "jsonwebtoken"
-import { ContentModel, UserModel, LinkModel, FolderModel } from "./db.js"
-import z from "zod"
-import bcrypt from "bcrypt"
-import connectToDB from "./db.js"
-import { JWT_SECRET, PORT } from "./config.js"
-import userMiddleware from "./middleware.js"
-import { random } from "./utils.js"
+import express from "express";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import z from "zod";
 import cors from "cors";
+import connectToDB from "./db.js";
+import {
+  ContentModel,
+  UserModel,
+  LinkModel,
+  FolderModel
+} from "./db.js";
+import userMiddleware from "./middleware.js";
+import { random } from "./utils.js";
+import { JWT_SECRET } from "./config.js";
 
 await connectToDB();
 
 const app = express();
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
 
-  if (origin === "https://orbit-stayorganized-stayinorbit.vercel.app") {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  }
 
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization"
-  );
-
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
-  next();
-});
-
+app.use(
+  cors({
+    origin: "https://orbit-stayorganized-stayinorbit.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+  })
+);
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Orbit Backend is running!...");
+
+app.get("/", (_req, res) => {
+  res.send("Orbit backend running");
 });
 
-app.get("/health", (req, res) => {
+app.get("/health", (_req, res) => {
   res.status(200).json({ status: "OK" });
 });
 
 
-app.post('/api/v1/signup',async (req, res) => {
-    
-    const signupSchema = z.object({
-        username: z.string().min(3),
-        password: z.string().min(3)
+app.post("/api/v1/signup", async (req, res) => {
+  const schema = z.object({
+    username: z.string().min(3),
+    password: z.string().min(3)
+  });
+
+  const parsed = schema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ message: "Invalid data" });
+  }
+
+  const { username, password } = parsed.data;
+  const hashedPassword = await bcrypt.hash(password, 5);
+
+  try {
+    await UserModel.create({ username, password: hashedPassword });
+    res.json({ message: "Signed up successfully" });
+  } catch (err) {
+    res.status(400).json({ message: "User already exists" });
+  }
+});
+
+app.post("/api/v1/signin", async (req, res) => {
+  const schema = z.object({
+    username: z.string(),
+    password: z.string().min(3)
+  });
+
+  const parsed = schema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ message: "Invalid data" });
+  }
+
+  const { username, password } = parsed.data;
+
+  const user = await UserModel.findOne({ username });
+  if (!user) {
+    return res.status(403).json({ message: "User not found" });
+  }
+
+  const match = await bcrypt.compare(password, user.password);
+  if (!match) {
+    return res.status(403).json({ message: "Incorrect credentials" });
+  }
+
+  const token = jwt.sign({ id: user._id }, JWT_SECRET);
+  res.json({ token });
+});
+
+
+app.post("/api/v1/brain/share", userMiddleware, async (req, res) => {
+  const { share } = req.body;
+
+  if (share) {
+    const existing = await LinkModel.findOne({
+      // @ts-ignore
+      userId: req.userId
     });
 
-    const parsed = signupSchema.safeParse(req.body);
-    if(!parsed.success){
-        return res.status(400).json({message:"Invalid request", errors: parsed.error});
+    if (existing) {
+      return res.json({ hash: existing.hash });
     }
 
-    const{username, password} = req.body;
-    const hashedPassword = await bcrypt.hash(password, 5);
-
-    try{
-        await UserModel.create({username, password: hashedPassword});
-        res.json({message: "Signed up successfully"});
-    }catch(err){
-        res.status(400).json({message: "Sign up failed", error: err});
-    }
-
-})
-
-app.post('/api/v1/signin',async (req, res) => {
-    const schema = z.object({ username: z.string(), password: z.string().min(3) });
-    const parsed = schema.safeParse(req.body);
-    if (!parsed.success) return res.status(400).json({ message: "Invalid data" });
-
-    const { username, password } = req.body;
-    const user = await UserModel.findOne({ username });
-    if (!user) return res.status(403).json({ message: "User not found!" });
-
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(403).json({ message: "Incorrect credentials!" });
-
-    const token = jwt.sign({ id: user._id }, JWT_SECRET);
-    res.json({ token });
-})
-
-app.post('/api/v1/brain/share',userMiddleware,async (req, res) => {
-    const share = req.body.share;
-
-    if(share){
-
-        const ExistingLink = await LinkModel.findOne({
-            // @ts-ignore
-            userId: req.userId
-        });
-        if(ExistingLink){
-            res.json({hash: ExistingLink.hash});
-
-            return;
-        }
-
-        const hash = random(10); 
-        await LinkModel.create({
-            // @ts-ignore
-            userId: req.userId,
-            hash: hash
-        })
-        res.json({hash});
-        return;
-    }
-
-        // @ts-ignore
-        await LinkModel.deleteOne({userId: req.userId});
-        res.json({message: "Share link removed"});
-    
-})
-
-app.get('/api/v1/brain/:shareLink',async (req, res) => {
-    const hash = req.params.shareLink;
-
-    const link = await LinkModel.findOne({
-        hash
+    const hash = random(10);
+    await LinkModel.create({
+      // @ts-ignore
+      userId: req.userId,
+      hash
     });
 
-    if(!link){
-        return res.status(404).json({message: "Link not found"});
-    }
+    return res.json({ hash });
+  }
 
-    const content = await ContentModel.find({
-        userId: link.userId
-    });
+  // @ts-ignore
+  await LinkModel.deleteOne({ userId: req.userId });
+  res.json({ message: "Share removed" });
+});
 
-    const user = await UserModel.findOne({
-        _id: link.userId
-    });
+app.get("/api/v1/brain/:shareLink", async (req, res) => {
+  const { shareLink } = req.params;
 
-    res.json({
-        username: user?.username,
-        content: content
-    })
+  const link = await LinkModel.findOne({ hash: shareLink });
+  if (!link) {
+    return res.status(404).json({ message: "Link not found" });
+  }
 
-})
+  const content = await ContentModel.find({ userId: link.userId });
+  const user = await UserModel.findById(link.userId);
+
+  res.json({
+    username: user?.username,
+    content
+  });
+});
+
 
 app.get("/api/v1/folders", userMiddleware, async (req, res) => {
-  //@ts-ignore
+  // @ts-ignore
   const folders = await FolderModel.find({ userId: req.userId });
   res.json({ folders });
 });
 
 app.post("/api/v1/folders", userMiddleware, async (req, res) => {
-  const name = req.body.name;
-
-  if (!name || name.trim() === "")
+  const { name } = req.body;
+  if (!name?.trim()) {
     return res.status(400).json({ message: "Folder name required" });
+  }
 
   const folder = await FolderModel.create({
     name,
@@ -170,26 +160,24 @@ app.put("/api/v1/folders/:id", userMiddleware, async (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
 
-  await FolderModel.updateOne(
-    // @ts-ignore
-    { _id: id, userId: req.userId },
-    { name }
-  );
-
+  // @ts-ignore
+  await FolderModel.updateOne({ _id: id, userId: req.userId }, { name });
   res.json({ message: "Folder renamed" });
 });
 
 app.delete("/api/v1/folders/:id", userMiddleware, async (req, res) => {
   const { id } = req.params;
-    // @ts-ignore
+
+  // @ts-ignore
   await FolderModel.deleteOne({ _id: id, userId: req.userId });
   await ContentModel.deleteMany({ folderId: id });
 
   res.json({ message: "Folder deleted" });
 });
 
+
 app.get("/api/v1/content", userMiddleware, async (req, res) => {
-  const folderId = req.query.folderId;
+  const { folderId } = req.query;
 
   const content = await ContentModel.find({
     // @ts-ignore
@@ -201,13 +189,8 @@ app.get("/api/v1/content", userMiddleware, async (req, res) => {
 });
 
 app.post("/api/v1/content", userMiddleware, async (req, res) => {
-  const { title, link, type, folderId } = req.body;
-
   const item = await ContentModel.create({
-    title,
-    link,
-    type,
-    folderId,
+    ...req.body,
     // @ts-ignore
     userId: req.userId,
     tags: []
@@ -219,15 +202,17 @@ app.post("/api/v1/content", userMiddleware, async (req, res) => {
 app.delete("/api/v1/content/:id", userMiddleware, async (req, res) => {
   const { id } = req.params;
 
-  await ContentModel.deleteOne({
-    _id: id,
-    // @ts-ignore
-    userId: req.userId
-  });
-
+  // @ts-ignore
+  await ContentModel.deleteOne({ _id: id, userId: req.userId });
   res.json({ message: "Content deleted" });
 });
 
+/* =======================
+   START SERVER
+   ======================= */
+const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
+

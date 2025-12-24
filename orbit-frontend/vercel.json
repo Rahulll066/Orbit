@@ -1,5 +1,9 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    {
+      "source": "/api/:path*",
+      "destination": "https://orbit-djvy.onrender.com/api/:path*"
+    }
   ]
 }
+

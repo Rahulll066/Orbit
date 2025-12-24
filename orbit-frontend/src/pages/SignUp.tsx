@@ -3,7 +3,6 @@ import { Button } from "../components/Button";
 import { OrbitIcon } from "../icons/OrbitIcon";
 import { useRef, useState } from "react";
 import axios from "axios";
-import { BACKEND_URL } from "../config";
 import { useNavigate } from "react-router-dom";
 
 export function Signup() {
@@ -18,7 +17,7 @@ export function Signup() {
     const password = passwordRef.current?.value;
 
     try {
-      await axios.post(BACKEND_URL + "/api/v1/signup", {
+      await axios.post("/api/v1/signup", {
         username,
         password,
       });
