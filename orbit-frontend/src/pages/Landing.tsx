@@ -69,7 +69,7 @@ export function LandingPage() {
         tag="From chaos to clarity"
         title="Your links shouldn’t live everywhere"
         description="Bookmarks, chats, notes, and tabs — important resources get scattered fast. Orbit brings everything into one calm, focused workspace."
-        image="../src/assets/orbitimg1.jpg"
+        image="https://ik.imagekit.io/0tglkhk4r/Orbit/orbitimg1.jpg"
         reverse={false}
       />
 
@@ -77,7 +77,7 @@ export function LandingPage() {
         tag="Think in folders"
         title="Organize content the way your brain works"
         description="Create folders for DSA, projects, research, or inspiration. Every link lives exactly where you expect it to."
-        image="../src/assets/orbitimg2.png"
+        image="https://ik.imagekit.io/0tglkhk4r/Orbit/orbitimg2.png"
         reverse={true}
       />
 
@@ -85,7 +85,7 @@ export function LandingPage() {
         tag="Preview instantly"
         title="See content without leaving your flow"
         description="Preview YouTube videos, X posts, Docs, and more — directly inside Orbit. No new tabs. No distractions."
-        image="../src/assets/orbitimg3.jpg"
+        image="https://ik.imagekit.io/0tglkhk4r/Orbit/orbitimg3.jpg"
         reverse={false}
       />
 
@@ -93,7 +93,7 @@ export function LandingPage() {
         tag="Share smarter"
         title="One link to share everything"
         description="Generate a public Orbit link and share your curated workspace with friends, teammates, or the world."
-        image="../src/assets/orbitimgg4.webp"
+        image="https://ik.imagekit.io/0tglkhk4r/Orbit/orbitimgg4.jpg.webp"
         reverse={true}
       />
       </section>
