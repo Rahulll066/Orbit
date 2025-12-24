@@ -5,7 +5,7 @@ import { ContentModel, UserModel, LinkModel, FolderModel } from "./db.js"
 import z from "zod"
 import bcrypt from "bcrypt"
 import connectToDB from "./db.js"
-import { JWT_SECRET, CORS_ORIGIN, PORT } from "./config.js"
+import { JWT_SECRET, PORT } from "./config.js"
 import userMiddleware from "./middleware.js"
 import { random } from "./utils.js"
 import cors from "cors";
@@ -16,7 +16,7 @@ const app = express();
 app.use((req, res, next) => {
   res.header(
     "Access-Control-Allow-Origin",
-    CORS_ORIGIN
+    "https://orbit-stayorganized-stayinorbit.vercel.app/"
   );
   res.header(
     "Access-Control-Allow-Methods",
