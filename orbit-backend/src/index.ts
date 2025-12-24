@@ -13,9 +13,14 @@ import cors from "cors";
 await connectToDB();
 
 const app = express();
+app.use(cors({
+  origin: [
+    "https://orbit-stayorganized-stayinorbit.vercel.app"
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true
+}));
 app.use(express.json());
-const allowedOrigins = (CORS_ORIGIN || "").split(",").map(s => s.trim()).filter(Boolean);
-app.use(cors({ origin: allowedOrigins.length ? allowedOrigins : '*' }));
 
 app.get("/", (req, res) => {
   res.send("Orbit Backend is running 🚀");
