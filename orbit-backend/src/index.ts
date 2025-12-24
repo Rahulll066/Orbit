@@ -21,7 +21,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://orbit-stayorganized-stayinorbit.vercel.app",
+    origin: "https://orbit-zeta-one.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
   })
