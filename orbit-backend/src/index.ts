@@ -17,6 +17,15 @@ app.use(express.json());
 const allowedOrigins = (CORS_ORIGIN || "").split(",").map(s => s.trim()).filter(Boolean);
 app.use(cors({ origin: allowedOrigins.length ? allowedOrigins : '*' }));
 
+app.get("/", (req, res) => {
+  res.send("Orbit Backend is running 🚀");
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK" });
+});
+
+
 app.post('/api/v1/signup',async (req, res) => {
     
     const signupSchema = z.object({
