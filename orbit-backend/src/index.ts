@@ -13,15 +13,32 @@ import cors from "cors";
 await connectToDB();
 
 const app = express();
-app.use(cors({
-  origin: [
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
     CORS_ORIGIN
-  ],
-}));
+  );
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.send("Orbit Backend is running 🚀");
+  res.send("Orbit Backend is running!...");
 });
 
 app.get("/health", (req, res) => {
