@@ -2,6 +2,8 @@ import { OrbitIcon } from "../icons/OrbitIcon";
 import { Button } from "../components/Button";
 import { FeatureSection } from "../components/FeaturedSection";
 import { Footer } from "../components/Footer";
+import { WhoIsOrbitFor } from "../components/OrbitForSection";
+import { LandingCTA } from "../components/FinalCTA";
 
 export function LandingPage() {
   return (
@@ -48,42 +50,56 @@ export function LandingPage() {
           <img
             src="../src/assets/dashboard.png"
             alt="Orbit workspace preview"
-            className="w-[90%] md:w-[850px] h-[400px] rounded-xl shadow-lg"
+            className="
+              w-full
+              max-w-[900px]
+              h-auto
+              rounded-xl
+              shadow-lg
+              object-contain
+            "
           />
         </div>
       </section>
 
-      <section>
-       <div>
-          <FeatureSection
-            tag="Collect effortlessly"
-            title="Save everything you need in one place"
-            description="With Orbit, you can capture YouTube videos, Tweets, and Docs instantly — all in a clean, unified workspace."
-            image="/assets/feature-1.png"
-          />
+      <WhoIsOrbitFor />
 
-          <FeatureSection
-            tag="Stay organized"
-            title="Build your perfect workspace"
-            description="Categorize and manage your saved content visually — focus on what matters most, without the clutter."
-            image="/assets/feature-2.png"
-          />
+      <section className="flex flex-col gap-20 py-20 bg-white">
+      <FeatureSection
+        tag="From chaos to clarity"
+        title="Your links shouldn’t live everywhere"
+        description="Bookmarks, chats, notes, and tabs — important resources get scattered fast. Orbit brings everything into one calm, focused workspace."
+        image="../src/assets/orbitimg1.jpg"
+        reverse={false}
+      />
 
-          <FeatureSection
-            tag="Access anywhere"
-            title="Your Orbit, always with you"
-            description="Sync your workspace across devices. Access your saved links anytime, anywhere."
-            image="/assets/feature-3.png"
-          />
+      <FeatureSection
+        tag="Think in folders"
+        title="Organize content the way your brain works"
+        description="Create folders for DSA, projects, research, or inspiration. Every link lives exactly where you expect it to."
+        image="../src/assets/orbitimg2.png"
+        reverse={true}
+      />
 
-          <FeatureSection
-            tag="Share easily"
-            title="Collaborate and share instantly"
-            description="Generate public links and let your team or friends explore your Orbit with one click."
-            image="/assets/feature-4.png"
-          />
-        </div>
+      <FeatureSection
+        tag="Preview instantly"
+        title="See content without leaving your flow"
+        description="Preview YouTube videos, X posts, Docs, and more — directly inside Orbit. No new tabs. No distractions."
+        image="../src/assets/orbitimg3.jpg"
+        reverse={false}
+      />
+
+      <FeatureSection
+        tag="Share smarter"
+        title="One link to share everything"
+        description="Generate a public Orbit link and share your curated workspace with friends, teammates, or the world."
+        image="../src/assets/orbitimgg4.webp"
+        reverse={true}
+      />
       </section>
+
+      <LandingCTA />
+
       <Footer/>
     </div>
   );

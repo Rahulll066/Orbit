@@ -151,8 +151,6 @@ app.delete("/api/v1/folders/:id", userMiddleware, async (req, res) => {
   const { id } = req.params;
     // @ts-ignore
   await FolderModel.deleteOne({ _id: id, userId: req.userId });
-
-  // Delete all content inside folder
   await ContentModel.deleteMany({ folderId: id });
 
   res.json({ message: "Folder deleted" });

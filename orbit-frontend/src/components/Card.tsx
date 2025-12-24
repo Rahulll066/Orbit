@@ -9,7 +9,6 @@ interface CardProps {
   onDelete?: () => void;
 }
 
-// Detect type
 function detectType(url: string) {
   const u = url.toLowerCase();
   if (u.includes("youtu")) return "youtube";
@@ -17,24 +16,17 @@ function detectType(url: string) {
   if (u.includes("instagram.com")) return "instagram";
   return "doc";
 }
-
-// Normalize X → Twitter link
 function getTwitterEmbedLink(url: string): string {
   try {
     let normalized = url.replace("x.com", "twitter.com");
-
-    // Remove ?s=20 or other parameters
     if (normalized.includes("?")) {
       normalized = normalized.split("?")[0];
     }
-
     return normalized;
   } catch {
     return "";
   }
 }
-
-// YouTube embed
 function getYoutubeEmbed(url: string) {
   if (url.includes("watch?v=")) {
     const id = url.split("watch?v=")[1].split("&")[0];
@@ -46,13 +38,9 @@ function getYoutubeEmbed(url: string) {
   }
   return url;
 }
-
-// Google Docs embed
 function getDocsEmbed(url: string) {
   return url.replace(/\/edit.*/, "/preview").replace(/\/view.*/, "/preview");
 }
-
-// Instagram embed
 function getInstagramEmbed(urlStr: string) {
   try {
     const url = new URL(urlStr);
@@ -67,12 +55,8 @@ function getInstagramEmbed(urlStr: string) {
 export function Card({ title, link, onDelete }: CardProps) {
   const type = detectType(link);
   const tweetRef = useRef<HTMLDivElement>(null);
-
-  // Load Twitter/X embed script once
   useEffect(() => {
     if (type !== "twitter") return;
-
-    // Load script once
     if (!document.getElementById("twitter-wjs")) {
       const script = document.createElement("script");
       script.id = "twitter-wjs";
@@ -80,8 +64,6 @@ export function Card({ title, link, onDelete }: CardProps) {
       script.async = true;
       document.body.appendChild(script);
     }
-
-    // Reload widgets when component updates
     const interval = setInterval(() => {
       if ((window as any).twttr?.widgets) {
         (window as any).twttr.widgets.load(tweetRef.current);
@@ -139,7 +121,6 @@ export function Card({ title, link, onDelete }: CardProps) {
     <div className="bg-white rounded-md p-4 border shadow-sm 
       w-full sm:w-[350px] lg:w-[420px] m-4">
 
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div className="flex items-center text-md">
           <span className="text-gray-500 pr-2"><NotebookIcon /></span>
@@ -156,7 +137,6 @@ export function Card({ title, link, onDelete }: CardProps) {
         </div>
       </div>
 
-      {/* Preview */}
       <div className="pt-4">{embed}</div>
     </div>
   );

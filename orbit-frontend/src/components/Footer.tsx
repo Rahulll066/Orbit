@@ -2,7 +2,7 @@ import { OrbitIcon } from "../icons/OrbitIcon";
 
 export function Footer() {
   return (
-    <footer className="bg-yellow-100 text-black-900 py-12 px-20 mt-20">
+    <footer className="bg-yellow-100 text-black-900 py-12 px-20 ">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-10">
         {/* Logo + About */}
         <div>
