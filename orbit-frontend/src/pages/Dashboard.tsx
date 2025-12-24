@@ -8,7 +8,6 @@ import { CreateFolderModal } from "../components/CreateFolderModal";
 import { RenameFolderModal } from "../components/RenameFolderModal";
 
 import axios from "axios";
-import { BACKEND_URL } from "../config";
 import { useEffect, useState } from "react";
 
 type CardType = "twitter" | "youtube" | "doc";
@@ -46,7 +45,7 @@ export default function Dashboard() {
   // -----------------------------
   useEffect(() => {
     async function loadFolders() {
-      const res = await axios.get(BACKEND_URL + "/api/v1/folders", {
+      const res = await axios.get("/api/v1/folders", {
         headers: { Authorization: token || "" }
       });
 
@@ -72,7 +71,7 @@ export default function Dashboard() {
     const folder = folders[index];
     if (!folder) return;
 
-    const res = await axios.get(BACKEND_URL + "/api/v1/content", {
+    const res = await axios.get("/api/v1/content", {
       params: { folderId: folder._id },
       headers: { Authorization: token || "" }
     });
@@ -89,7 +88,7 @@ export default function Dashboard() {
   // -----------------------------
   async function createFolder(name: string) {
     const res = await axios.post(
-      BACKEND_URL + "/api/v1/folders",
+      "/api/v1/folders",
       { name },
       { headers: { Authorization: token || "" } }
     );
@@ -109,7 +108,7 @@ export default function Dashboard() {
     if (!folder) return;
 
     await axios.put(
-      BACKEND_URL + "/api/v1/folders/" + folder._id,
+      "/api/v1/folders/" + folder._id,
       { name },
       { headers: { Authorization: token || "" } }
     );
@@ -125,7 +124,7 @@ export default function Dashboard() {
     const folder = folders[index];
     if (!folder) return;
 
-    await axios.delete(BACKEND_URL + "/api/v1/folders/" + folder._id, {
+    await axios.delete("/api/v1/folders/" + folder._id, {
       headers: { Authorization: token || "" }
     });
 
@@ -146,7 +145,7 @@ export default function Dashboard() {
     else if (link.includes("x.com") || link.includes("twitter")) type = "twitter";
 
     await axios.post(
-      BACKEND_URL + "/api/v1/content",
+      "/api/v1/content",
       { title, link, type, folderId: folder._id },
       { headers: { Authorization: token || "" } }
     );
@@ -157,7 +156,7 @@ export default function Dashboard() {
   async function deleteCard(cardId: string) {
     if (currentFolderIndex === null) return;
 
-    await axios.delete(BACKEND_URL + "/api/v1/content/" + cardId, {
+    await axios.delete("/api/v1/content/" + cardId, {
       headers: { Authorization: token || "" }
     });
 
