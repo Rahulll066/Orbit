@@ -5,7 +5,7 @@ import { ContentModel, UserModel, LinkModel, FolderModel } from "./db.js"
 import z from "zod"
 import bcrypt from "bcrypt"
 import connectToDB from "./db.js"
-import { JWT_SECRET } from "./config.js"
+import { JWT_SECRET, CORS_ORIGIN, PORT } from "./config.js"
 import userMiddleware from "./middleware.js"
 import { random } from "./utils.js"
 import cors from "cors";
@@ -14,7 +14,8 @@ await connectToDB();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+const allowedOrigins = (CORS_ORIGIN || "").split(",").map(s => s.trim()).filter(Boolean);
+app.use(cors({ origin: allowedOrigins.length ? allowedOrigins : '*' }));
 
 app.post('/api/v1/signup',async (req, res) => {
     
@@ -196,6 +197,6 @@ app.delete("/api/v1/content/:id", userMiddleware, async (req, res) => {
   res.json({ message: "Content deleted" });
 });
 
-app.listen(3000, () => {
-    console.log("Server started on port 3000"); 
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`); 
 });

@@ -1,15 +1,15 @@
 import e from 'express';
 import mongoose,{Model,Schema} from 'mongoose';
 import { required } from 'zod/mini';
+import { MONGO_URI } from './config.js';
 
 const connectToDB = async () => {
-try{
-    await mongoose.connect("mongodb+srv://rahul:rahulsainadh066@cluster0.pd0do6m.mongodb.net/Orbit");
-    console.log("Connected to MongoDB successfully");
-}
-catch(err){
-    console.error("MongoDB connection error:", err);
-}
+    try {
+        await mongoose.connect(MONGO_URI);
+        console.log('Connected to MongoDB successfully');
+    } catch (err) {
+        console.error('MongoDB connection error:', err);
+    }
 };
 
 const userSchema = new Schema({
