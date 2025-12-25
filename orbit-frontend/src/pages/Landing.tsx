@@ -59,7 +59,7 @@ export function LandingPage() {
 
       <WhoIsOrbitFor />
 
-      <section className="flex flex-col gap-20 py-20 bg-white">
+      <section className="flex flex-col gap-4 sm:gap-8 md:gap-12 py-8 sm:py-16 md:py-24 bg-white">
       <FeatureSection
         tag="From chaos to clarity"
         title="Your links shouldn’t live everywhere"

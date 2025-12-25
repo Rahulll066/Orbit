@@ -17,12 +17,12 @@ export function FeatureSection({
     <div
       className={`flex flex-col ${
         reverse ? "md:flex-row-reverse" : "md:flex-row"
-      } items-center justify-between px-4 sm:px-10 md:px-20 lg:px-32 py-12 sm:py-20 md:py-20 gap-6 sm:gap-10 md:gap-16 bg-white`}
+      } items-center px-3 sm:px-4 md:px-20 lg:px-32 py-4 sm:py-8 md:py-12 gap-3 sm:gap-4 md:gap-8 bg-white`}
     >
       {/* Text */}
-      <div className="flex-1 w-full">
-        <p className="text-sm sm:text-base text-yellow-500 font-semibold mb-3 sm:mb-4">{tag}</p>
-        <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight">
+      <div className="w-full md:flex-1 flex flex-col justify-center">
+        <p className="text-xs sm:text-sm text-yellow-500 font-semibold mb-2 sm:mb-3 md:mb-4">{tag}</p>
+        <h2 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-3 sm:mb-4 md:mb-6 leading-tight">
           {title}
         </h2>
         <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed max-w-lg">
@@ -31,11 +31,11 @@ export function FeatureSection({
       </div>
 
       {/* Image */}
-      <div className="flex-1 flex justify-center w-full">
+      <div className="w-full md:flex-1 flex justify-center">
         <img
           src={image}
           alt={title}
-          className="rounded-lg sm:rounded-2xl shadow-lg sm:shadow-xl w-full max-w-[300px] sm:max-w-[450px] md:max-w-[550px] h-auto object-cover"
+          className="rounded-lg sm:rounded-2xl shadow-lg sm:shadow-xl w-full max-w-[280px] sm:max-w-[400px] md:max-w-[500px] lg:max-w-[550px] h-auto object-cover"
         />
       </div>
     </div>
